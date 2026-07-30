@@ -3,6 +3,18 @@
 App học từ vựng tiếng Nhật N2 bằng cách hiển thị và phát âm từng từ
 liên tục theo một khoảng thời gian cố định.
 
+## Bản online
+
+Mở app tại:
+
+```text
+https://hungnguyenkoakfs.github.io/kotoba-loop/
+```
+
+Trên điện thoại, mở URL bằng Chrome hoặc Safari rồi chọn **Thêm vào màn
+hình chính**. Trên Chrome hoặc Edge máy tính, chọn **Cài đặt ứng dụng**
+trong thanh địa chỉ hoặc menu trình duyệt.
+
 ## Chạy app
 
 Từ thư mục `LearningKotoba`, chạy:
@@ -31,3 +43,14 @@ việc đọc tệp JSON.
 - Lưu cài đặt, từ yêu thích và số lần gặp bằng `localStorage`.
 - Hỗ trợ bàn phím và giao diện mobile.
 - Service worker giúp dùng lại app khi mất mạng sau lần tải đầu.
+
+## Tạo gói GitHub Pages
+
+Từ thư mục `LearningKotoba`, chạy:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-pages.ps1
+```
+
+Gói tĩnh sẽ được tạo trong thư mục `dist`. Nhánh xuất bản hiện dùng là
+`gh-pages` của repository `hungnguyenkoakfs/kotoba-loop`.
