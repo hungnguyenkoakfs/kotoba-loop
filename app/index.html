@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kotoba Loop - học từ vựng tiếng Nhật N2 bằng cách nhìn và nghe lặp lại."
+    />
+    <meta name="theme-color" content="#f4efe4" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Kotoba Loop" />
+    <title>Kotoba Loop · Học từ vựng N2</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#wordCard">Đi tới thẻ từ vựng</a>
+
+    <div class="app-shell" id="appShell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Kotoba Loop - trang chính">
+          <span class="brand-mark" aria-hidden="true">
+            <span>日</span>
+          </span>
+          <span class="brand-copy">
+            <strong>Kotoba Loop</strong>
+            <small>Nhìn · nghe · ghi nhớ</small>
+          </span>
+        </a>
+
+        <div class="topbar-summary" aria-label="Thông tin bộ từ">
+          <span class="summary-dot" aria-hidden="true"></span>
+          <strong id="datasetCount">1.942</strong>
+          <span>từ vựng N2</span>
+        </div>
+
+        <div class="topbar-actions">
+          <button
+            class="icon-button topbar-button"
+            id="helpButton"
+            type="button"
+            aria-label="Xem phím tắt"
+            title="Phím tắt"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M9.3 9a2.8 2.8 0 1 1 4.3 2.4c-1 .6-1.6 1.1-1.6 2.3" />
+              <path d="M12 17.7h.01" />
+              <circle cx="12" cy="12" r="9" />
+            </svg>
+          </button>
+          <button
+            class="icon-button topbar-button panel-toggle"
+            id="panelToggle"
+            type="button"
+            aria-controls="controlPanel"
+            aria-expanded="false"
+            aria-label="Mở bộ điều khiển"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M10 14v6" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="main-layout">
+        <section class="study-stage" aria-label="Thẻ học từ vựng">
+          <div class="session-strip">
+            <div class="session-context">
+              <span class="eyebrow">Vòng lặp hiện tại</span>
+              <strong id="sessionContext">Toàn bộ giáo trình</strong>
+            </div>
+            <div class="session-position">
+              <span id="positionText">1 / 1.942</span>
+              <span class="position-separator" aria-hidden="true">·</span>
+              <span id="orderText">Tuần tự</span>
+            </div>
+          </div>
+
+          <div class="cycle-track" aria-hidden="true">
+            <span id="cycleProgress"></span>
+          </div>
+
+          <article class="word-card" id="wordCard" tabindex="-1">
+            <div class="word-card-pattern" aria-hidden="true">
+              <span>語</span>
+            </div>
+
+            <div class="word-meta">
+              <span class="meta-pill meta-pill-accent" id="chapterBadge">
+                Chương 1 · Bài 1
+              </span>
+              <span class="meta-pill" id="partOfSpeechBadge">Danh từ</span>
+              <span class="seen-pill" id="seenBadge">Lần gặp đầu tiên</span>
+            </div>
+
+            <div class="word-heading">
+              <div class="word-title-block">
+                <p class="hiragana" id="hiragana">あんこーる</p>
+                <h1 class="term" id="term">アンコール</h1>
+              </div>
+
+              <div class="word-actions">
+                <button
+                  class="round-action"
+                  id="speakButton"
+                  type="button"
+                  aria-label="Phát âm từ hiện tại"
+                  title="Phát âm (S)"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M5 10v4h3l4 3V7l-4 3H5Z" />
+                    <path d="M15.5 9.3a4 4 0 0 1 0 5.4M18 7a7 7 0 0 1 0 10" />
+                  </svg>
+                </button>
+                <button
+                  class="round-action favorite-button"
+                  id="favoriteButton"
+                  type="button"
+                  aria-label="Thêm từ hiện tại vào yêu thích"
+                  aria-pressed="false"
+                  title="Yêu thích (F)"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.7-7 10-7 10Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="han-viet-row" id="hanVietRow">
+              <span>Hán–Việt</span>
+              <strong id="hanViet">—</strong>
+            </div>
+
+            <section class="meaning-section" aria-labelledby="meaningLabel">
+              <div class="section-heading">
+                <span class="section-number">01</span>
+                <h2 id="meaningLabel">Nghĩa</h2>
+              </div>
+              <ul class="meaning-list" id="meaningList"></ul>
+            </section>
+
+            <section class="example-section" aria-labelledby="exampleLabel">
+              <div class="section-heading">
+                <span class="section-number">02</span>
+                <h2 id="exampleLabel">Câu ví dụ</h2>
+                <span class="section-count" id="exampleCount"></span>
+              </div>
+              <div class="example-list" id="exampleList"></div>
+            </section>
+
+            <p class="source-note" id="sourceNote">Nguồn · trang 2</p>
+          </article>
+
+          <nav class="player" aria-label="Điều khiển phát từ vựng">
+            <button
+              class="player-skip"
+              id="previousButton"
+              type="button"
+              aria-label="Từ trước"
+              title="Từ trước (←)"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M7 6v12M18 6l-8 6 8 6V6Z" />
+              </svg>
+              <span>Trước</span>
+            </button>
+
+            <button
+              class="play-button"
+              id="playButton"
+              type="button"
+              aria-label="Bắt đầu vòng lặp"
+              aria-pressed="false"
+            >
+              <span class="play-icon" aria-hidden="true">
+                <svg class="icon-play" viewBox="0 0 24 24">
+                  <path d="m9 6 9 6-9 6V6Z" />
+                </svg>
+                <svg class="icon-pause" viewBox="0 0 24 24">
+                  <path d="M9 6v12M15 6v12" />
+                </svg>
+              </span>
+              <span class="play-copy">
+                <strong id="playLabel">Bắt đầu</strong>
+                <small id="countdownLabel">Mỗi 5 giây</small>
+              </span>
+            </button>
+
+            <button
+              class="player-skip"
+              id="nextButton"
+              type="button"
+              aria-label="Từ tiếp theo"
+              title="Từ tiếp theo (→)"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M17 6v12M6 6l8 6-8 6V6Z" />
+              </svg>
+              <span>Tiếp</span>
+            </button>
+          </nav>
+
+          <div class="keyboard-hint" aria-hidden="true">
+            <span><kbd>Space</kbd> chạy / dừng</span>
+            <span><kbd>←</kbd><kbd>→</kbd> chuyển từ</span>
+            <span><kbd>S</kbd> phát âm</span>
+          </div>
+        </section>
+
+        <aside class="control-panel" id="controlPanel" aria-label="Bộ điều khiển">
+          <div class="panel-mobile-header">
+            <div>
+              <span class="eyebrow">Tùy chỉnh</span>
+              <h2>Bộ điều khiển</h2>
+            </div>
+            <button
+              class="icon-button"
+              id="panelClose"
+              type="button"
+              aria-label="Đóng bộ điều khiển"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="m6 6 12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+
+          <section class="panel-section filter-section">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Phạm vi học</span>
+                <h2>Chọn danh sách</h2>
+              </div>
+              <span class="result-count" id="resultCount">1.942 từ</span>
+            </div>
+
+            <label class="search-field">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="6" />
+                <path d="m16 16 4 4" />
+              </svg>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Tìm kanji, nghĩa..."
+                autocomplete="off"
+              />
+              <span class="sr-only">Tìm từ vựng</span>
+            </label>
+
+            <div class="select-grid">
+              <label>
+                <span>Chương</span>
+                <select id="chapterSelect">
+                  <option value="all">Tất cả chương</option>
+                </select>
+              </label>
+              <label>
+                <span>Bài</span>
+                <select id="lessonSelect">
+                  <option value="all">Tất cả bài</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="toggle-row" for="favoritesOnly">
+              <span class="toggle-copy">
+                <strong>Chỉ từ yêu thích</strong>
+                <small id="favoriteCountLabel">Chưa có từ nào</small>
+              </span>
+              <input id="favoritesOnly" type="checkbox" />
+              <span class="toggle-ui" aria-hidden="true"></span>
+            </label>
+          </section>
+
+          <section class="panel-section">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">Cách chạy</span>
+                <h2>Nhịp học</h2>
+              </div>
+            </div>
+
+            <div class="segmented-control" aria-label="Thứ tự phát">
+              <button
+                class="segment is-active"
+                id="sequentialMode"
+                type="button"
+                aria-pressed="true"
+              >
+                Tuần tự
+              </button>
+              <button
+                class="segment"
+                id="randomMode"
+                type="button"
+                aria-pressed="false"
+              >
+                Ngẫu nhiên
+              </button>
+            </div>
+
+            <label class="range-field">
+              <span class="range-heading">
+                <span>
+                  <strong>Khoảng thời gian</strong>
+                  <small>Giữa hai từ liên tiếp</small>
+                </span>
+                <output id="intervalOutput" for="intervalRange">5 giây</output>
+              </span>
+              <input
+                id="intervalRange"
+                type="range"
+                min="3"
+                max="20"
+                step="1"
+                value="5"
+              />
+              <span class="range-scale" aria-hidden="true">
+                <span>3s</span><span>20s</span>
+              </span>
+            </label>
+          </section>
+
+          <section class="panel-section">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">Âm thanh</span>
+                <h2>Giọng đọc</h2>
+              </div>
+            </div>
+
+            <label class="select-field">
+              <span>Giọng tiếng Nhật</span>
+              <select id="voiceSelect">
+                <option value="">Mặc định thiết bị (ja-JP)</option>
+              </select>
+            </label>
+
+            <label class="range-field rate-field">
+              <span class="range-heading">
+                <span>
+                  <strong>Tốc độ đọc</strong>
+                  <small>Chậm hơn giúp nghe rõ âm</small>
+                </span>
+                <output id="rateOutput" for="rateRange">0,9×</output>
+              </span>
+              <input
+                id="rateRange"
+                type="range"
+                min="0.6"
+                max="1.2"
+                step="0.1"
+                value="0.9"
+              />
+            </label>
+          </section>
+
+          <section class="panel-section session-panel">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">Phiên này</span>
+                <h2>Tiến độ</h2>
+              </div>
+              <button class="text-button" id="resetSessionButton" type="button">
+                Đặt lại
+              </button>
+            </div>
+
+            <div class="stats-grid">
+              <div>
+                <strong id="seenTotal">0</strong>
+                <span>lượt đã xem</span>
+              </div>
+              <div>
+                <strong id="seenUnique">0</strong>
+                <span>từ khác nhau</span>
+              </div>
+            </div>
+
+            <div class="queue-preview">
+              <span class="queue-label">Sắp tới</span>
+              <ol id="queueList"></ol>
+            </div>
+          </section>
+
+          <p class="panel-footnote">
+            Tiến độ, từ yêu thích và thiết lập được lưu trên thiết bị này.
+          </p>
+        </aside>
+      </main>
+    </div>
+
+    <button
+      class="panel-backdrop"
+      id="panelBackdrop"
+      type="button"
+      tabindex="-1"
+      aria-label="Đóng bộ điều khiển"
+    ></button>
+
+    <dialog class="help-dialog" id="helpDialog">
+      <div class="dialog-heading">
+        <div>
+          <span class="eyebrow">Điều khiển nhanh</span>
+          <h2>Phím tắt</h2>
+        </div>
+        <button
+          class="icon-button"
+          id="helpClose"
+          type="button"
+          aria-label="Đóng cửa sổ phím tắt"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </div>
+      <dl class="shortcut-list">
+        <div><dt><kbd>Space</kbd></dt><dd>Chạy hoặc tạm dừng</dd></div>
+        <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Từ trước / tiếp theo</dd></div>
+        <div><dt><kbd>S</kbd></dt><dd>Phát âm lại từ hiện tại</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Thêm hoặc bỏ yêu thích</dd></div>
+      </dl>
+      <p>
+        Trình duyệt có thể yêu cầu một lần nhấn nút trước khi cho phép phát
+        âm tự động.
+      </p>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <template id="exampleTemplate">
+      <article class="example-item">
+        <span class="example-index"></span>
+        <div class="example-copy">
+          <p class="example-japanese"></p>
+          <p class="example-meaning"></p>
+        </div>
+        <button class="example-audio" type="button" aria-label="Đọc câu ví dụ">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M5 10v4h3l4 3V7l-4 3H5Z" />
+            <path d="M15.5 9.3a4 4 0 0 1 0 5.4" />
+          </svg>
+        </button>
+      </article>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
