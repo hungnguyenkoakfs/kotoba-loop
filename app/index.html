@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Kotoba Loop - học từ vựng tiếng Nhật N2 bằng cách nhìn và nghe lặp lại."
+      content="Kotoba Loop - học từ vựng tiếng Nhật N2 và tiếng Anh TOEIC bằng cách nhìn và nghe lặp lại."
     />
     <meta name="theme-color" content="#f4efe4" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Kotoba Loop" />
-    <title>Kotoba Loop · Học từ vựng N2</title>
+    <title>Kotoba Loop · Học từ vựng Nhật & Anh</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=4" />
   </head>
   <body>
     <a class="skip-link" href="#wordCard">Đi tới thẻ từ vựng</a>
@@ -24,7 +24,7 @@
       <header class="topbar">
         <a class="brand" href="./" aria-label="Kotoba Loop - trang chính">
           <span class="brand-mark" aria-hidden="true">
-            <span>日</span>
+            <span id="brandMarkText">日</span>
           </span>
           <span class="brand-copy">
             <strong>Kotoba Loop</strong>
@@ -35,7 +35,7 @@
         <div class="topbar-summary" aria-label="Thông tin bộ từ">
           <span class="summary-dot" aria-hidden="true"></span>
           <strong id="datasetCount">1.942</strong>
-          <span>từ vựng N2</span>
+          <span id="datasetLabel">từ vựng N2</span>
         </div>
 
         <div class="topbar-actions">
@@ -67,6 +67,30 @@
         </div>
       </header>
 
+      <nav class="language-tabs" id="languageTabs" aria-label="Chọn ngôn ngữ" role="tablist">
+        <button
+          class="language-tab is-active"
+          id="japaneseTab"
+          type="button"
+          role="tab"
+          aria-selected="true"
+        >
+          <span class="language-code" aria-hidden="true">日</span>
+          <span><strong>Tiếng Nhật</strong><small>N2 · 1.942 từ</small></span>
+        </button>
+        <button
+          class="language-tab"
+          id="englishTab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          <span class="language-code" aria-hidden="true">EN</span>
+          <span><strong>Tiếng Anh</strong><small>TOEIC · 1.191 từ</small></span>
+        </button>
+      </nav>
+
       <main class="main-layout">
         <section class="study-stage" aria-label="Thẻ học từ vựng">
           <div class="session-strip">
@@ -87,7 +111,7 @@
 
           <article class="word-card" id="wordCard" tabindex="-1">
             <div class="word-card-pattern" aria-hidden="true">
-              <span>語</span>
+              <span id="patternText">語</span>
             </div>
 
             <div class="word-meta">
@@ -133,7 +157,7 @@
             </div>
 
             <div class="han-viet-row" id="hanVietRow">
-              <span>Hán–Việt</span>
+              <span id="detailLabel">Hán–Việt</span>
               <strong id="hanViet">—</strong>
             </div>
 
@@ -256,13 +280,13 @@
 
             <div class="select-grid">
               <label>
-                <span>Chương</span>
+                <span id="chapterLabel">Chương</span>
                 <select id="chapterSelect">
                   <option value="all">Tất cả chương</option>
                 </select>
               </label>
-              <label>
-                <span>Bài</span>
+              <label id="lessonField">
+                <span id="lessonLabel">Bài</span>
                 <select id="lessonSelect">
                   <option value="all">Tất cả bài</option>
                 </select>
@@ -337,7 +361,7 @@
             </div>
 
             <label class="select-field">
-              <span>Giọng tiếng Nhật</span>
+              <span id="voiceLabel">Giọng tiếng Nhật</span>
               <select id="voiceSelect">
                 <option value="">Mặc định thiết bị (ja-JP)</option>
               </select>
@@ -452,6 +476,6 @@
       </article>
     </template>
 
-    <script type="module" src="./app.js"></script>
+    <script type="module" src="./app.js?v=4"></script>
   </body>
 </html>

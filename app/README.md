@@ -1,7 +1,7 @@
 # Kotoba Loop
 
-App học từ vựng tiếng Nhật N2 bằng cách hiển thị và phát âm từng từ
-liên tục theo một khoảng thời gian cố định.
+App học từ vựng tiếng Nhật N2 và tiếng Anh TOEIC bằng cách hiển thị và
+phát âm từng từ liên tục theo một khoảng thời gian cố định.
 
 ## Bản online
 
@@ -36,7 +36,9 @@ việc đọc tệp JSON.
 
 - Chạy/dừng vòng lặp, chuyển từ trước hoặc tiếp theo.
 - Khoảng thời gian từ 3 đến 20 giây.
-- Tự động phát âm tiếng Nhật bằng Web Speech API của trình duyệt.
+- Hai tab học riêng: tiếng Nhật N2 và tiếng Anh Hackers TOEIC.
+- Tự động chọn giọng tiếng Nhật hoặc tiếng Anh bằng Web Speech API.
+- Bộ tiếng Anh có nghĩa, từ loại, từ đồng nghĩa và câu ví dụ Anh–Việt.
 - Chọn giọng đọc và tốc độ đọc.
 - Lọc theo chương, bài, nội dung tìm kiếm hoặc từ yêu thích.
 - Chế độ tuần tự và ngẫu nhiên.

@@ -1,13 +1,40 @@
-const DATA_URL = new URL("../data/vocabulary.json", window.location.href);
-const STORAGE_KEYS = {
-  settings: "kotoba-loop:settings:v1",
-  favorites: "kotoba-loop:favorites:v1",
-  seen: "kotoba-loop:seen:v1",
+const LANGUAGE_KEY = "kotoba-loop:language:v1";
+const DATASETS = {
+  ja: {
+    url: new URL("../data/vocabulary.json", window.location.href),
+    speechLanguage: "ja-JP",
+    voicePattern: /^ja([-_]|$)/i,
+    name: "Tiếng Nhật",
+    summary: "từ vựng N2",
+    collection: "Toàn bộ giáo trình N2",
+  },
+  en: {
+    url: new URL("../data/hacker_toeic.json", window.location.href),
+    speechLanguage: "en-US",
+    voicePattern: /^en([-_]|$)/i,
+    name: "Tiếng Anh",
+    summary: "từ vựng TOEIC",
+    collection: "Toàn bộ Hackers TOEIC",
+  },
 };
+
+function storageKeysFor(language) {
+  return {
+    settings: `kotoba-loop:${language}:settings:v2`,
+    favorites: `kotoba-loop:${language}:favorites:v2`,
+    seen: `kotoba-loop:${language}:seen:v2`,
+  };
+}
 
 const elements = {
   appShell: document.querySelector("#appShell"),
+  languageTabs: document.querySelector("#languageTabs"),
+  japaneseTab: document.querySelector("#japaneseTab"),
+  englishTab: document.querySelector("#englishTab"),
+  brandMarkText: document.querySelector("#brandMarkText"),
+  patternText: document.querySelector("#patternText"),
   datasetCount: document.querySelector("#datasetCount"),
+  datasetLabel: document.querySelector("#datasetLabel"),
   sessionContext: document.querySelector("#sessionContext"),
   positionText: document.querySelector("#positionText"),
   orderText: document.querySelector("#orderText"),
@@ -21,6 +48,7 @@ const elements = {
   speakButton: document.querySelector("#speakButton"),
   favoriteButton: document.querySelector("#favoriteButton"),
   hanVietRow: document.querySelector("#hanVietRow"),
+  detailLabel: document.querySelector("#detailLabel"),
   hanViet: document.querySelector("#hanViet"),
   meaningList: document.querySelector("#meaningList"),
   exampleCount: document.querySelector("#exampleCount"),
@@ -38,6 +66,9 @@ const elements = {
   resultCount: document.querySelector("#resultCount"),
   searchInput: document.querySelector("#searchInput"),
   chapterSelect: document.querySelector("#chapterSelect"),
+  chapterLabel: document.querySelector("#chapterLabel"),
+  lessonField: document.querySelector("#lessonField"),
+  lessonLabel: document.querySelector("#lessonLabel"),
   lessonSelect: document.querySelector("#lessonSelect"),
   favoritesOnly: document.querySelector("#favoritesOnly"),
   favoriteCountLabel: document.querySelector("#favoriteCountLabel"),
@@ -46,6 +77,7 @@ const elements = {
   intervalRange: document.querySelector("#intervalRange"),
   intervalOutput: document.querySelector("#intervalOutput"),
   voiceSelect: document.querySelector("#voiceSelect"),
+  voiceLabel: document.querySelector("#voiceLabel"),
   rateRange: document.querySelector("#rateRange"),
   rateOutput: document.querySelector("#rateOutput"),
   seenTotal: document.querySelector("#seenTotal"),
@@ -59,9 +91,12 @@ const elements = {
   exampleTemplate: document.querySelector("#exampleTemplate"),
 };
 
-const savedSettings = readStorage(STORAGE_KEYS.settings, {});
+const initialLanguage = readStorage(LANGUAGE_KEY, "ja") === "en" ? "en" : "ja";
+let storageKeys = storageKeysFor(initialLanguage);
+const savedSettings = readStorage(storageKeys.settings, {});
 
 const state = {
+  language: initialLanguage,
   words: [],
   filteredWords: [],
   playbackWords: [],
@@ -77,8 +112,8 @@ const state = {
   favoritesOnly: Boolean(savedSettings.favoritesOnly),
   selectedVoiceURI: String(savedSettings.selectedVoiceURI || ""),
   currentId: String(savedSettings.currentId || ""),
-  favorites: new Set(readStorage(STORAGE_KEYS.favorites, [])),
-  seenCounts: readStorage(STORAGE_KEYS.seen, {}),
+  favorites: new Set(readStorage(storageKeys.favorites, [])),
+  seenCounts: readStorage(storageKeys.seen, {}),
   sessionViews: 0,
   sessionSeen: new Set(),
   voices: [],
@@ -132,7 +167,7 @@ function currentWord() {
 
 function saveSettings() {
   const word = currentWord();
-  writeStorage(STORAGE_KEYS.settings, {
+  writeStorage(storageKeys.settings, {
     intervalSeconds: state.intervalSeconds,
     speechRate: state.speechRate,
     orderMode: state.orderMode,
@@ -173,18 +208,34 @@ function humanizePartOfSpeech(value) {
     "Phótừ": "Phó từ",
     "Trạngtừ": "Trạng từ",
     "Đơnvịđo": "Đơn vị đo",
+    n: "Danh từ",
+    v: "Động từ",
+    adj: "Tính từ",
+    adv: "Trạng từ",
+    prep: "Giới từ",
+    conj: "Liên từ",
+    pron: "Đại từ",
+    det: "Từ hạn định",
+    phr: "Cụm từ",
   };
   return labels[value] || value || "Từ vựng";
 }
 
 function populateChapterOptions() {
+  elements.chapterSelect.replaceChildren();
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent =
+    state.language === "en" ? "Tất cả ngày" : "Tất cả chương";
+  elements.chapterSelect.append(allOption);
   const chapters = [...new Set(state.words.map((word) => word.chapter))].sort(
     (a, b) => a - b,
   );
   for (const chapter of chapters) {
     const option = document.createElement("option");
     option.value = String(chapter);
-    option.textContent = `Chương ${chapter}`;
+    option.textContent =
+      state.language === "en" ? `Ngày ${chapter}` : `Chương ${chapter}`;
     elements.chapterSelect.append(option);
   }
   const validChapter =
@@ -257,6 +308,7 @@ function applyFilters({ preserveCurrent = true, announce = false } = {}) {
       return false;
     }
     if (
+      state.language === "ja" &&
       state.selectedLesson !== "all" &&
       word.lesson !== Number(state.selectedLesson)
     ) {
@@ -294,14 +346,18 @@ function applyFilters({ preserveCurrent = true, announce = false } = {}) {
 function buildContextLabel() {
   const parts = [];
   if (state.selectedChapter !== "all") {
-    parts.push(`Chương ${state.selectedChapter}`);
+    parts.push(
+      state.language === "en"
+        ? `Ngày ${state.selectedChapter}`
+        : `Chương ${state.selectedChapter}`,
+    );
   }
-  if (state.selectedLesson !== "all") {
+  if (state.language === "ja" && state.selectedLesson !== "all") {
     parts.push(`Bài ${state.selectedLesson}`);
   }
   if (state.favoritesOnly) parts.push("Yêu thích");
   if (state.search.trim()) parts.push(`“${state.search.trim()}”`);
-  return parts.length ? parts.join(" · ") : "Toàn bộ giáo trình";
+  return parts.length ? parts.join(" · ") : DATASETS[state.language].collection;
 }
 
 function render() {
@@ -325,15 +381,22 @@ function render() {
   elements.positionText.textContent = `${formatNumber(state.cursor + 1)} / ${formatNumber(
     state.playbackWords.length,
   )}`;
-  elements.chapterBadge.textContent = `Chương ${word.chapter} · Bài ${word.lesson}`;
+  elements.chapterBadge.textContent =
+    state.language === "en"
+      ? `Ngày ${word.chapter} · Từ ${word.dayIndex}`
+      : `Chương ${word.chapter} · Bài ${word.lesson}`;
   elements.partOfSpeechBadge.textContent = humanizePartOfSpeech(
     word.part_of_speech,
   );
   elements.hiragana.textContent = word.hiragana;
   elements.term.textContent = word.term;
-  elements.hanViet.textContent = word.han_viet || "Không ghi trong PDF";
+  elements.hanViet.textContent =
+    word.han_viet ||
+    (state.language === "en" ? "Không có từ đồng nghĩa" : "Không ghi trong PDF");
   elements.hanVietRow.classList.toggle("is-empty", !word.han_viet);
-  elements.sourceNote.textContent = `Nguồn · trang ${word.source_page}`;
+  elements.sourceNote.textContent = `${
+    state.language === "en" ? "Hackers TOEIC" : "Nguồn"
+  } · trang ${word.source_page}`;
 
   const seenCount = Number(state.seenCounts[word.id] || 0);
   elements.seenBadge.textContent =
@@ -391,7 +454,8 @@ function renderEmptyState() {
   elements.chapterBadge.textContent = "Danh sách trống";
   elements.partOfSpeechBadge.textContent = "Đổi bộ lọc";
   elements.seenBadge.textContent = "";
-  elements.hiragana.textContent = "みつかりません";
+  elements.hiragana.textContent =
+    state.language === "en" ? "NO RESULTS" : "みつかりません";
   elements.term.textContent = "Không tìm thấy";
   elements.hanViet.textContent = "Hãy thử bỏ bớt điều kiện lọc";
   elements.meaningList.replaceChildren();
@@ -458,7 +522,7 @@ function markCurrentSeen() {
   state.seenCounts[word.id] = Number(state.seenCounts[word.id] || 0) + 1;
   state.sessionViews += 1;
   state.sessionSeen.add(word.id);
-  writeStorage(STORAGE_KEYS.seen, state.seenCounts);
+  writeStorage(storageKeys.seen, state.seenCounts);
   renderSessionStats();
   elements.seenBadge.textContent = `Đã gặp ${formatNumber(
     state.seenCounts[word.id],
@@ -556,9 +620,10 @@ function cleanSpeechText(text) {
 }
 
 function getSelectedVoice() {
+  const config = DATASETS[state.language];
   return (
     state.voices.find((voice) => voice.voiceURI === state.selectedVoiceURI) ||
-    state.voices.find((voice) => /^ja([-_]|$)/i.test(voice.lang)) ||
+    state.voices.find((voice) => config.voicePattern.test(voice.lang)) ||
     null
   );
 }
@@ -575,7 +640,7 @@ function speak(text, { quietFailure = false } = {}) {
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.lang = "ja-JP";
+  utterance.lang = DATASETS[state.language].speechLanguage;
   utterance.rate = state.speechRate;
   utterance.pitch = 1;
   const voice = getSelectedVoice();
@@ -596,25 +661,26 @@ function populateVoices() {
 
   const voices = window.speechSynthesis.getVoices();
   state.voices = voices;
-  const japaneseVoices = voices.filter((voice) =>
-    /^ja([-_]|$)/i.test(voice.lang),
+  const config = DATASETS[state.language];
+  const languageVoices = voices.filter((voice) =>
+    config.voicePattern.test(voice.lang),
   );
   const previousValue = state.selectedVoiceURI;
   elements.voiceSelect.replaceChildren();
 
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
-  defaultOption.textContent = "Mặc định thiết bị (ja-JP)";
+  defaultOption.textContent = `Mặc định thiết bị (${config.speechLanguage})`;
   elements.voiceSelect.append(defaultOption);
 
-  japaneseVoices.forEach((voice) => {
+  languageVoices.forEach((voice) => {
     const option = document.createElement("option");
     option.value = voice.voiceURI;
     option.textContent = `${voice.name}${voice.localService ? "" : " · online"}`;
     elements.voiceSelect.append(option);
   });
 
-  const selectedExists = japaneseVoices.some(
+  const selectedExists = languageVoices.some(
     (voice) => voice.voiceURI === previousValue,
   );
   if (!selectedExists) state.selectedVoiceURI = "";
@@ -631,7 +697,7 @@ function toggleFavorite() {
   } else {
     state.favorites.add(word.id);
   }
-  writeStorage(STORAGE_KEYS.favorites, [...state.favorites]);
+  writeStorage(storageKeys.favorites, [...state.favorites]);
 
   if (state.favoritesOnly && wasFavorite) {
     applyFilters({ preserveCurrent: false });
@@ -663,7 +729,104 @@ function setPanelOpen(isOpen) {
   }
 }
 
+function normalizeVocabulary(payload) {
+  if (state.language === "ja") {
+    if (!Array.isArray(payload)) return [];
+    return payload.map((word) => ({ ...word, dayIndex: word.lesson }));
+  }
+
+  if (!payload || !Array.isArray(payload.entries)) return [];
+  return payload.entries.map((entry) => {
+    const english = String(entry.example?.english || "").trim();
+    const vietnamese = String(entry.example?.vietnamese || "").trim();
+    return {
+      id: `en-${entry.id}`,
+      chapter: Number(entry.day),
+      lesson: Number(entry.day),
+      dayIndex: Number(entry.day_index),
+      term: String(entry.headword || entry.word || "").trim(),
+      hiragana: `DAY ${String(entry.day).padStart(2, "0")} · #${String(
+        entry.day_index,
+      ).padStart(2, "0")}`,
+      han_viet: Array.isArray(entry.synonyms) ? entry.synonyms.join(" · ") : "",
+      part_of_speech: String(entry.part_of_speech || "").trim(),
+      meanings: [String(entry.meaning || "").trim()].filter(Boolean),
+      examples:
+        english || vietnamese
+          ? [{ japanese: english, meaning: vietnamese }]
+          : [],
+      source_page: Number(entry.source_pdf_page),
+    };
+  });
+}
+
+function updateLanguageUI() {
+  const isEnglish = state.language === "en";
+  const config = DATASETS[state.language];
+  document.body.classList.toggle("language-en", isEnglish);
+  document.documentElement.lang = isEnglish ? "en" : "vi";
+  document.title = isEnglish
+    ? "Kotoba Loop · Hackers TOEIC"
+    : "Kotoba Loop · Học từ vựng N2";
+  elements.japaneseTab.classList.toggle("is-active", !isEnglish);
+  elements.englishTab.classList.toggle("is-active", isEnglish);
+  elements.japaneseTab.setAttribute("aria-selected", String(!isEnglish));
+  elements.englishTab.setAttribute("aria-selected", String(isEnglish));
+  elements.japaneseTab.tabIndex = isEnglish ? -1 : 0;
+  elements.englishTab.tabIndex = isEnglish ? 0 : -1;
+  elements.brandMarkText.textContent = isEnglish ? "EN" : "日";
+  elements.patternText.textContent = isEnglish ? "A" : "語";
+  elements.datasetLabel.textContent = config.summary;
+  elements.detailLabel.textContent = isEnglish ? "Đồng nghĩa" : "Hán–Việt";
+  elements.chapterLabel.textContent = isEnglish ? "Ngày học" : "Chương";
+  elements.lessonLabel.textContent = "Bài";
+  elements.lessonField.hidden = isEnglish;
+  elements.searchInput.placeholder = isEnglish
+    ? "Tìm từ, nghĩa, đồng nghĩa..."
+    : "Tìm kanji, nghĩa...";
+  elements.voiceLabel.textContent = `Giọng ${config.name.toLocaleLowerCase("vi")}`;
+}
+
+function restoreLanguageState() {
+  storageKeys = storageKeysFor(state.language);
+  const settings = readStorage(storageKeys.settings, {});
+  state.intervalSeconds = clamp(Number(settings.intervalSeconds) || 5, 3, 20);
+  state.speechRate = clamp(Number(settings.speechRate) || 0.9, 0.6, 1.2);
+  state.orderMode = settings.orderMode === "random" ? "random" : "sequential";
+  state.selectedChapter = String(settings.selectedChapter || "all");
+  state.selectedLesson = String(settings.selectedLesson || "all");
+  state.search = String(settings.search || "");
+  state.favoritesOnly = Boolean(settings.favoritesOnly);
+  state.selectedVoiceURI = String(settings.selectedVoiceURI || "");
+  state.currentId = String(settings.currentId || "");
+  state.favorites = new Set(readStorage(storageKeys.favorites, []));
+  state.seenCounts = readStorage(storageKeys.seen, {});
+  state.sessionViews = 0;
+  state.sessionSeen = new Set();
+  state.words = [];
+  state.filteredWords = [];
+  state.playbackWords = [];
+  state.cursor = 0;
+  state.currentTracked = false;
+}
+
+async function changeLanguage(language) {
+  if (!DATASETS[language] || language === state.language) return;
+  pausePlayback({ silent: true });
+  saveSettings();
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  state.language = language;
+  writeStorage(LANGUAGE_KEY, language);
+  restoreLanguageState();
+  updateLanguageUI();
+  initializeControls();
+  await loadVocabulary();
+  showToast(`Đã chuyển sang ${DATASETS[language].name}`);
+}
+
 function bindEvents() {
+  elements.japaneseTab.addEventListener("click", () => changeLanguage("ja"));
+  elements.englishTab.addEventListener("click", () => changeLanguage("en"));
   elements.playButton.addEventListener("click", togglePlayback);
   elements.previousButton.addEventListener("click", () => move(-1));
   elements.nextButton.addEventListener("click", () => move(1));
@@ -809,17 +972,19 @@ function initializeControls() {
 }
 
 async function loadVocabulary() {
-  elements.hiragana.textContent = "よみこみちゅう";
+  elements.hiragana.textContent =
+    state.language === "en" ? "LOADING" : "よみこみちゅう";
   elements.term.textContent = "Đang tải…";
   setNavigationDisabled(true);
 
   try {
-    const response = await fetch(DATA_URL);
+    const response = await fetch(DATASETS[state.language].url);
     if (!response.ok) {
       throw new Error(`Không thể tải dữ liệu (${response.status})`);
     }
-    const words = await response.json();
-    if (!Array.isArray(words) || words.length === 0) {
+    const payload = await response.json();
+    const words = normalizeVocabulary(payload);
+    if (words.length === 0) {
       throw new Error("Dữ liệu từ vựng không hợp lệ");
     }
 
@@ -832,7 +997,7 @@ async function loadVocabulary() {
     pausePlayback({ silent: true });
     elements.chapterBadge.textContent = "Lỗi dữ liệu";
     elements.partOfSpeechBadge.textContent = "";
-    elements.hiragana.textContent = "エラー";
+    elements.hiragana.textContent = state.language === "en" ? "ERROR" : "エラー";
     elements.term.textContent = "Chưa tải được từ vựng";
     elements.hanViet.textContent = "Hãy chạy app qua máy chủ cục bộ";
     elements.meaningList.replaceChildren();
@@ -857,6 +1022,7 @@ function registerServiceWorker() {
   }
 }
 
+updateLanguageUI();
 initializeControls();
 bindEvents();
 loadVocabulary();

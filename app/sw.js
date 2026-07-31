@@ -1,14 +1,15 @@
-const CACHE_NAME = "kotoba-loop-v2";
+const CACHE_NAME = "kotoba-loop-v4";
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
+  "./styles.css?v=4",
+  "./app.js?v=4",
   "./icon.svg",
   "./icon-192.png",
   "./icon-512.png",
   "./manifest.webmanifest",
   "../data/vocabulary.json",
+  "../data/hacker_toeic.json",
 ];
 
 self.addEventListener("install", (event) => {
@@ -39,7 +40,9 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
-  const isVocabulary = url.pathname.endsWith("/data/vocabulary.json");
+  const isVocabulary =
+    url.pathname.endsWith("/data/vocabulary.json") ||
+    url.pathname.endsWith("/data/hacker_toeic.json");
 
   if (isVocabulary) {
     event.respondWith(
